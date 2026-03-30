@@ -24,7 +24,7 @@ const mealIcons: Record<MealType, string> = {
 };
 
 export function MealCard({ meal, user, day, isShared, isOverride, sourceDay, onEdit }: MealCardProps) {
-  const { toggleMealCompletion, replaceMealTemporarily, clearMealOverride } = useDietStore();
+  const { toggleMealCompletion, replaceMealTemporarily, clearMealOverride, weeklyPlan } = useDietStore();
   const [showReplaceMenu, setShowReplaceMenu] = useState(false);
 
   const label = MEAL_TYPES.find((m) => m.key === meal.type)?.label || meal.type;
@@ -151,17 +151,24 @@ export function MealCard({ meal, user, day, isShared, isOverride, sourceDay, onE
                   className="fixed inset-0 z-10"
                   onClick={() => setShowReplaceMenu(false)}
                 />
-                <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-stone-200 py-1 z-20 min-w-[160px]">
+                <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-stone-200 py-1 z-20 min-w-[280px] max-h-[300px] overflow-y-auto">
                   <p className="px-3 py-1 text-xs text-stone-500 font-medium">Replace with {label.toLowerCase()} from:</p>
-                  {otherDays.map((d) => (
-                    <button
-                      key={d}
-                      onClick={() => handleReplace(d)}
-                      className="w-full px-3 py-2 text-left text-sm hover:bg-stone-50 transition-colors"
-                    >
-                      {DAY_LABELS[d]}
-                    </button>
-                  ))}
+                  {otherDays.map((d) => {
+                    const dayMeal = weeklyPlan[user][d].meals[meal.type];
+                    return (
+                      <button
+                        key={d}
+                        onClick={() => handleReplace(d)}
+                        className="w-full px-3 py-2 text-left hover:bg-stone-50 transition-colors border-b border-stone-100 last:border-b-0"
+                      >
+                        <span className="text-xs font-semibold text-emerald-600">{DAY_LABELS[d]}</span>
+                        <p className="text-sm text-stone-700 line-clamp-2">{dayMeal.text}</p>
+                        {dayMeal.calories && (
+                          <span className="text-xs text-stone-400">{dayMeal.calories} cal</span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </>
             )}
