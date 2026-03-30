@@ -8,6 +8,12 @@ export interface Meal {
   id: string;
   type: MealType;
   text: string;
+  calories?: number;
+  protein?: number;      // grams
+  carbs?: number;        // grams
+  fat?: number;          // grams
+  completed: boolean;
+  completedAt?: string;  // ISO timestamp
   notes?: string;
   isEdited: boolean;
   lastUpdated: string;
@@ -28,6 +34,113 @@ export interface WeeklyPlan {
   jackson: Record<DayOfWeek, DayPlan>;
   rymma: Record<DayOfWeek, DayPlan>;
   sharedPrep: Record<DayOfWeek, SharedPrep>;
+}
+
+// User Profile types
+export type ActivityLevel = 'sedentary' | 'lightly_active' | 'moderately_active' | 'very_active' | 'extremely_active';
+export type DietGoal = 'lose_weight' | 'maintain_weight' | 'gain_muscle' | 'improve_health';
+export type Gender = 'male' | 'female';
+
+export interface UserProfile {
+  id: string;
+  user: User;
+  name: string;
+  height_cm: number;
+  weight_kg: number;
+  age: number;
+  gender: Gender;
+  activity_level: ActivityLevel;
+  goal: DietGoal;
+  target_calories: number;
+  target_protein: number;
+  target_carbs: number;
+  target_fat: number;
+  created_at: string;
+  updated_at: string;
+}
+
+// Supplement types
+export type SupplementTiming = 'morning' | 'with_breakfast' | 'with_lunch' | 'with_dinner' | 'before_workout' | 'after_workout' | 'before_bed';
+
+export interface Supplement {
+  id: string;
+  user: User;
+  name: string;
+  dosage: string;
+  timing: SupplementTiming[];
+  notes?: string;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface SupplementEntry {
+  id: string;
+  supplement_id: string;
+  date: string; // YYYY-MM-DD
+  taken: boolean;
+  taken_at?: string; // ISO timestamp
+}
+
+// Daily stats for analytics
+export interface DailyStats {
+  id: string;
+  user: User;
+  date: string; // YYYY-MM-DD
+  calories_consumed: number;
+  protein_consumed: number;
+  carbs_consumed: number;
+  fat_consumed: number;
+  calories_target: number;
+  protein_target: number;
+  carbs_target: number;
+  fat_target: number;
+  meals_completed: number;
+  meals_total: number;
+  supplements_taken: number;
+  supplements_total: number;
+  created_at: string;
+}
+
+// Weekly summary for analytics
+export interface WeeklySummary {
+  week_start: string;
+  week_end: string;
+  user: User;
+  avg_calories: number;
+  avg_protein: number;
+  avg_carbs: number;
+  avg_fat: number;
+  completion_rate: number;
+  days_tracked: number;
+  best_day: string;
+  needs_improvement: string[];
+}
+
+// Diet streak tracking
+export interface DietStreak {
+  user: User;
+  current_streak: number;
+  longest_streak: number;
+  streak_start_date?: string;
+  last_completed_date?: string;
+}
+
+// Daily weight tracking
+export interface WeightEntry {
+  date: string; // YYYY-MM-DD
+  weight_kg: number;
+  recorded_at: string; // ISO timestamp
+}
+
+// PDF upload tracking
+export interface UploadedPlan {
+  id: string;
+  file_name: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  error_message?: string;
+  extracted_plan?: WeeklyPlan;
+  uploaded_at: string;
+  processed_at?: string;
 }
 
 export const DAYS: DayOfWeek[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -54,3 +167,28 @@ export const USER_LABELS: Record<User, string> = {
   jackson: 'Jackson',
   rymma: 'Rymma',
 };
+
+export const ACTIVITY_LEVELS: { value: ActivityLevel; label: string; multiplier: number }[] = [
+  { value: 'sedentary', label: 'Sedentary (little/no exercise)', multiplier: 1.2 },
+  { value: 'lightly_active', label: 'Lightly Active (1-3 days/week)', multiplier: 1.375 },
+  { value: 'moderately_active', label: 'Moderately Active (3-5 days/week)', multiplier: 1.55 },
+  { value: 'very_active', label: 'Very Active (6-7 days/week)', multiplier: 1.725 },
+  { value: 'extremely_active', label: 'Extremely Active (athlete)', multiplier: 1.9 },
+];
+
+export const DIET_GOALS: { value: DietGoal; label: string; calorieAdjustment: number }[] = [
+  { value: 'lose_weight', label: 'Lose Weight', calorieAdjustment: -500 },
+  { value: 'maintain_weight', label: 'Maintain Weight', calorieAdjustment: 0 },
+  { value: 'gain_muscle', label: 'Build Muscle', calorieAdjustment: 300 },
+  { value: 'improve_health', label: 'Improve Health', calorieAdjustment: 0 },
+];
+
+export const SUPPLEMENT_TIMINGS: { value: SupplementTiming; label: string; icon: string }[] = [
+  { value: 'morning', label: 'Morning', icon: '🌅' },
+  { value: 'with_breakfast', label: 'With Breakfast', icon: '🥣' },
+  { value: 'with_lunch', label: 'With Lunch', icon: '🍽️' },
+  { value: 'with_dinner', label: 'With Dinner', icon: '🌙' },
+  { value: 'before_workout', label: 'Pre-Workout', icon: '💪' },
+  { value: 'after_workout', label: 'Post-Workout', icon: '🥤' },
+  { value: 'before_bed', label: 'Before Bed', icon: '😴' },
+];

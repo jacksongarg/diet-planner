@@ -1,19 +1,49 @@
 'use client';
 
-import { useState } from 'react';
-import { UtensilsCrossed } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useDietStore } from '@/store/dietStore';
-import { User, MealType } from '@/lib/types';
+import { User, MealType, Meal } from '@/lib/types';
 import { findSharedMeals, calculateOverlapScore } from '@/lib/shareUtils';
+import { DateHeader } from '@/components/DateHeader';
 import { DaySelector } from '@/components/DaySelector';
 import { UserMealSection } from '@/components/UserMealSection';
 import { SharedPrepSection } from '@/components/SharedPrepSection';
 import { ActionButtons } from '@/components/ActionButtons';
 import { EditMealModal } from '@/components/EditMealModal';
+import { SupplementsSection } from '@/components/SupplementsSection';
+import { WeightEntryModal } from '@/components/WeightEntryModal';
 
 export default function Home() {
-  const { weeklyPlan, selectedDay, updateMeal, updateSharedPrep, resetDayToDefault } = useDietStore();
+  const { weeklyPlan, selectedDay, selectedDate, updateMeal, updateSharedPrep, resetDayToDefault, needsWeightEntry } = useDietStore();
   const [editingMeal, setEditingMeal] = useState<{ user: User; mealType: MealType } | null>(null);
+  const [weightModalUser, setWeightModalUser] = useState<User | null>(null);
+  const [hasCheckedWeight, setHasCheckedWeight] = useState(false);
+
+  // Check if weight entry is needed on mount
+  useEffect(() => {
+    if (hasCheckedWeight) return;
+
+    // Small delay to ensure store is hydrated
+    const timer = setTimeout(() => {
+      if (needsWeightEntry('jackson')) {
+        setWeightModalUser('jackson');
+      } else if (needsWeightEntry('rymma')) {
+        setWeightModalUser('rymma');
+      }
+      setHasCheckedWeight(true);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [needsWeightEntry, hasCheckedWeight]);
+
+  const handleWeightModalClose = () => {
+    // Check if the other user also needs weight entry
+    if (weightModalUser === 'jackson' && needsWeightEntry('rymma')) {
+      setWeightModalUser('rymma');
+    } else {
+      setWeightModalUser(null);
+    }
+  };
 
   const jacksonDayPlan = weeklyPlan.jackson[selectedDay];
   const rymmaDayPlan = weeklyPlan.rymma[selectedDay];
@@ -25,9 +55,9 @@ export default function Home() {
     setEditingMeal({ user, mealType });
   };
 
-  const handleSaveMeal = (text: string, saveAsDefault: boolean) => {
+  const handleSaveMeal = (updates: Partial<Meal>, saveAsDefault: boolean) => {
     if (!editingMeal) return;
-    updateMeal(editingMeal.user, selectedDay, editingMeal.mealType, text, saveAsDefault);
+    updateMeal(editingMeal.user, selectedDay, editingMeal.mealType, updates, saveAsDefault);
     setEditingMeal(null);
   };
 
@@ -38,17 +68,16 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50">
-      {/* Header */}
-      <header className="header-gradient sticky top-0 z-10 px-4 py-4 border-b border-stone-200 shadow-sm">
+    <div className="min-h-screen bg-stone-50 pb-20">
+      {/* Date Header with Share Button */}
+      <DateHeader />
+
+      {/* Day Selector */}
+      <div className="sticky top-0 z-10 bg-stone-50">
         <div className="max-w-lg mx-auto">
-          <div className="flex items-center gap-2 mb-3">
-            <UtensilsCrossed className="w-6 h-6 text-emerald-600" />
-            <h1 className="text-xl font-bold text-stone-800">Diet Planner</h1>
-          </div>
           <DaySelector />
         </div>
-      </header>
+      </div>
 
       {/* Main Content */}
       <main className="max-w-lg mx-auto px-4 py-6">
@@ -65,16 +94,27 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <UserMealSection
             user="jackson"
+            day={selectedDay}
             dayPlan={jacksonDayPlan}
             sharedMeals={sharedMeals}
             onEditMeal={handleEditMeal}
           />
           <UserMealSection
             user="rymma"
+            day={selectedDay}
             dayPlan={rymmaDayPlan}
             sharedMeals={sharedMeals}
             onEditMeal={handleEditMeal}
           />
+        </div>
+
+        {/* Supplements Section */}
+        <div className="mt-6">
+          <h2 className="text-lg font-semibold text-stone-800 mb-4">Daily Supplements</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SupplementsSection user="jackson" date={selectedDate} />
+            <SupplementsSection user="rymma" date={selectedDate} />
+          </div>
         </div>
 
         {/* Action Buttons */}
@@ -95,6 +135,13 @@ export default function Home() {
         day={selectedDay}
         onSave={handleSaveMeal}
         onClose={() => setEditingMeal(null)}
+      />
+
+      {/* Weight Entry Modal */}
+      <WeightEntryModal
+        isOpen={weightModalUser !== null}
+        user={weightModalUser || 'jackson'}
+        onClose={handleWeightModalClose}
       />
     </div>
   );
