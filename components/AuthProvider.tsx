@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
-import { supabase, isSupabaseConfigured } from '@/lib/supabase/client';
+import { supabase, isSupabaseConfigured as checkSupabaseConfigured } from '@/lib/supabase/client';
 import { useAuthStore } from '@/store/authStore';
 import { useNotificationStore } from '@/store/notificationStore';
 import { useConnectionStore } from '@/store/connectionStore';
@@ -23,7 +23,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     // If Supabase isn't configured, just render children (legacy mode)
-    if (!isSupabaseConfigured) {
+    if (!checkSupabaseConfigured()) {
       setIsInitialized(true);
       setLoading(false);
       return;
