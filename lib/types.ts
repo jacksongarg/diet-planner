@@ -1,4 +1,156 @@
-export type User = 'jackson' | 'rymma';
+// Legacy hardcoded user type - keeping for backward compatibility during migration
+export type LegacyUser = 'jackson' | 'rymma';
+// Alias for backward compatibility with existing components
+export type User = LegacyUser;
+
+// Auth types
+export type UserRole = 'user' | 'dietician';
+export type ViewMode = 'single' | 'couple' | 'dietician';
+export type ConnectionType = 'couple' | 'friend' | 'dietician_client';
+export type ConnectionStatus = 'pending' | 'accepted' | 'rejected';
+export type NotificationType = 'connection_request' | 'connection_accepted' | 'plan_updated' | 'meal_reminder';
+
+// Supabase profile type
+export interface DietProfile {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  avatar_url?: string;
+  height_cm?: number;
+  weight_kg?: number;
+  age?: number;
+  gender?: Gender;
+  activity_level?: ActivityLevel;
+  goal?: DietGoal;
+  target_calories?: number;
+  target_protein?: number;
+  target_carbs?: number;
+  target_fat?: number;
+  view_mode: ViewMode;
+  created_at: string;
+  updated_at: string;
+}
+
+// Connection type
+export interface Connection {
+  id: string;
+  requester_id: string;
+  recipient_id: string;
+  type: ConnectionType;
+  status: ConnectionStatus;
+  created_at: string;
+  updated_at: string;
+  // Joined data
+  requester?: DietProfile;
+  recipient?: DietProfile;
+}
+
+// Notification type
+export interface Notification {
+  id: string;
+  user_id: string;
+  type: NotificationType;
+  title: string;
+  message?: string;
+  data?: {
+    connection_id?: string;
+    requester_id?: string;
+    requester_name?: string;
+    connection_type?: ConnectionType;
+    accepter_id?: string;
+    accepter_name?: string;
+    [key: string]: string | undefined;
+  };
+  read: boolean;
+  created_at: string;
+}
+
+// Connected user view (for couple mode)
+export interface ConnectedUserView {
+  connection: Connection;
+  profile: DietProfile;
+  plan?: MealPlanWithDays;
+}
+
+// Dietician client view
+export interface DieticianClientView {
+  connection: Connection;
+  profile: DietProfile;
+  plans: MealPlanWithDays[];
+  lastUpdated?: string;
+}
+
+// Supabase meal plan types (replaces localStorage types)
+export interface MealPlan {
+  id: string;
+  user_id: string;
+  title: string;
+  description?: string;
+  daily_calories?: number;
+  protein_grams?: number;
+  carbs_grams?: number;
+  fat_grams?: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  created_by?: string;
+}
+
+export interface MealPlanDay {
+  id: string;
+  plan_id: string;
+  day_of_week: DayOfWeek;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+  meals?: MealItem[];
+}
+
+export interface MealItem {
+  id: string;
+  plan_id: string;
+  day_of_week: DayOfWeek;
+  meal_type: MealType;
+  text: string;
+  calories?: number;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
+  notes?: string;
+  is_default: boolean;
+  created_at: string;
+  updated_at: string;
+  updated_by?: string;
+}
+
+export interface MealCompletion {
+  id: string;
+  user_id: string;
+  meal_id: string;
+  date: string;
+  completed_at: string;
+}
+
+export interface MealPlanWithDays extends MealPlan {
+  days: MealPlanDayWithMeals[];
+}
+
+export interface MealPlanDayWithMeals extends MealPlanDay {
+  meals: MealItem[];
+}
+
+// Auth state
+export interface DietAuthState {
+  user: DietProfile | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  viewMode: ViewMode;
+  connectedUsers: ConnectedUserView[];
+  activePartner: DietProfile | null;
+  activeClient: DietProfile | null; // For dietician mode
+  clients: DieticianClientView[]; // For dietician mode
+}
 
 export type MealType = 'breakfast' | 'morningSnack' | 'lunch' | 'afternoonSnack' | 'dinner';
 

@@ -154,3 +154,110 @@ Fixed meal replacement bug and added daily weight tracking:
 - `lib/types.ts`: Added `WeightEntry` interface
 - `store/dietStore.ts`: Added `weightEntries`, `weightPromptDismissed`, `recordWeight`, `getLatestWeight`, `getTodayWeight`, `needsWeightEntry`, `dismissWeightPrompt`
 - `app/page.tsx`: Added WeightEntryModal that shows on app load if weight not recorded
+
+---
+**Session: March 30, 2026 (Update 3)**
+Implemented User Authentication & Multi-Mode System with Supabase:
+
+## New Features
+
+### User Authentication
+- Login/signup with email/password
+- Google OAuth support
+- Password reset flow
+- Session management
+
+### Multi-Mode System
+- **Single Mode**: User sees only their own diet plan
+- **Couple/Friend Mode**: Two users see each other's plans (temporary changes only)
+- **Dietician Mode**: Professional can manage multiple clients with full edit access
+
+### Connection System
+- Send/accept/reject connection requests
+- In-app notifications for connection events
+- Real-time notification updates via Supabase subscriptions
+
+## Database Schema (Supabase)
+Migration file: `supabase/migrations/001_auth_multimode.sql`
+
+**Tables:**
+- `profiles` - User profiles with role, stats, macro targets, view_mode
+- `connections` - Relationships between users (couple, friend, dietician_client)
+- `notifications` - In-app notifications for connection requests
+- `meal_plans` - User-specific meal plans
+- `meals` - Individual meals with macros
+- `meal_completions` - Meal completion tracking
+- `supplements` - Supplement definitions
+- `supplement_entries` - Daily supplement tracking
+- `weight_entries` - Weight history
+- `daily_stats` - Daily nutrition stats
+- `shared_prep` - Shared prep notes per day
+
+**Features:**
+- Row Level Security (RLS) policies for all tables
+- Auto-create profile on signup trigger
+- Auto-notification triggers for connection events
+
+## New Files
+
+### Supabase Setup
+- `lib/supabase/client.ts` - Browser Supabase client
+- `lib/supabase/server.ts` - Server Supabase client
+- `lib/supabase/middleware.ts` - Auth middleware
+- `lib/supabase/index.ts` - Exports
+- `middleware.ts` - Next.js middleware for route protection
+
+### Auth Pages
+- `app/(auth)/layout.tsx` - Auth layout with logo
+- `app/(auth)/login/page.tsx` - Login page
+- `app/(auth)/signup/page.tsx` - Signup with role selection
+- `app/(auth)/forgot-password/page.tsx` - Password reset
+- `app/auth/callback/route.ts` - OAuth callback handler
+
+### Auth Components
+- `components/auth/LoginForm.tsx` - Email/password + Google OAuth
+- `components/auth/SignupForm.tsx` - With user/dietician role selection
+- `components/auth/ForgotPasswordForm.tsx` - Password reset flow
+
+### Stores
+- `store/authStore.ts` - Auth state, view mode, connections
+- `store/notificationStore.ts` - Notifications with real-time subscription
+- `store/connectionStore.ts` - Connection management
+
+### API Routes
+- `app/api/connections/route.ts` - List/create connections
+- `app/api/connections/[id]/route.ts` - Update/delete connections
+- `app/api/notifications/route.ts` - List/clear notifications
+- `app/api/notifications/[id]/route.ts` - Read/delete notification
+
+### UI Components
+- `components/AuthProvider.tsx` - Auth initialization wrapper
+- `components/NotificationBell.tsx` - Bell with badge, dropdown, actions
+- `components/AddConnectionModal.tsx` - Search users, send requests
+- `components/ModeToggle.tsx` - Switch between modes
+- `components/PartnerSelector.tsx` - Select partner in couple mode
+- `components/ClientSelector.tsx` - Select client in dietician mode
+- `components/DieticianDashboard.tsx` - Client management dashboard
+
+## Updated Files
+- `lib/types.ts` - Added auth types (DietProfile, Connection, Notification, ViewMode, etc.)
+- `app/layout.tsx` - Added AuthProvider wrapper
+
+## Environment Variables (New)
+```
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key (optional)
+```
+
+## Dependencies Added
+```bash
+npm install @supabase/supabase-js @supabase/ssr
+```
+
+## Next Steps
+1. Create Supabase project and configure auth settings
+2. Run the migration in Supabase SQL Editor
+3. Add environment variables to `.env.local`
+4. Configure Google OAuth (optional)
+5. Deploy and test auth flows
