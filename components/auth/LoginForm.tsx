@@ -35,8 +35,9 @@ export function LoginForm() {
 
       router.push(redirect);
       router.refresh();
-    } catch (err) {
-      setError('An unexpected error occurred');
+    } catch (err: any) {
+      console.error('Login error:', err);
+      setError(err?.message || 'An unexpected error occurred');
     } finally {
       setIsLoading(false);
     }
@@ -58,8 +59,9 @@ export function LoginForm() {
         setError(error.message);
         setIsLoading(false);
       }
-    } catch (err) {
-      setError('An unexpected error occurred');
+    } catch (err: any) {
+      console.error('Google signin error:', err);
+      setError(err?.message || 'An unexpected error occurred');
       setIsLoading(false);
     }
   };

@@ -80,8 +80,9 @@ export function SignupForm() {
         setError(error.message);
         setIsLoading(false);
       }
-    } catch (err) {
-      setError('An unexpected error occurred');
+    } catch (err: any) {
+      console.error('Google signup error:', err);
+      setError(err?.message || 'An unexpected error occurred');
       setIsLoading(false);
     }
   };
