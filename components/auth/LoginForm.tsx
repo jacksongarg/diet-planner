@@ -23,22 +23,33 @@ export function LoginForm() {
     setError(null);
 
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      console.log('Attempting login with:', email);
+
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
+      console.log('Sign in result:', { data, error: signInError });
+
       if (signInError) {
         setError(signInError.message);
+        setIsLoading(false);
         return;
       }
 
+      if (!data.session) {
+        setError('No session returned. Please try again.');
+        setIsLoading(false);
+        return;
+      }
+
+      // Successfully signed in - redirect
       router.push(redirect);
       router.refresh();
     } catch (err: any) {
       console.error('Login error:', err);
       setError(err?.message || 'An unexpected error occurred');
-    } finally {
       setIsLoading(false);
     }
   };

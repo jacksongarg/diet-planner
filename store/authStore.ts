@@ -70,12 +70,22 @@ export const useAuthStore = create<AuthStore>()(
         set({ isLoading: true });
 
         try {
-          const { data: { user: authUser } } = await supabase.auth.getUser();
+          console.log('Refreshing profile...');
+          const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
 
-          if (!authUser) {
+          if (authError) {
+            console.error('Error getting auth user:', authError);
             set({ user: null, isAuthenticated: false, isLoading: false });
             return;
           }
+
+          if (!authUser) {
+            console.log('No auth user found');
+            set({ user: null, isAuthenticated: false, isLoading: false });
+            return;
+          }
+
+          console.log('Auth user found:', authUser.email);
 
           // Fetch profile
           const { data: profile, error } = await supabase
@@ -86,10 +96,29 @@ export const useAuthStore = create<AuthStore>()(
 
           if (error) {
             console.error('Error fetching profile:', error);
+            // Profile might not exist yet - create a basic one from auth user
+            if (error.code === 'PGRST116') {
+              console.log('Profile not found, using auth user data');
+              const basicProfile = {
+                id: authUser.id,
+                email: authUser.email || '',
+                name: authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'User',
+                role: 'user' as const,
+                view_mode: 'single' as const,
+              };
+              set({
+                user: basicProfile as any,
+                isAuthenticated: true,
+                viewMode: 'single',
+                isLoading: false,
+              });
+              return;
+            }
             set({ isLoading: false });
             return;
           }
 
+          console.log('Profile loaded:', profile.name);
           set({
             user: profile,
             isAuthenticated: true,

@@ -55,13 +55,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event: AuthChangeEvent, session: Session | null) => {
+        console.log('Auth state changed:', event, session?.user?.email);
+
         if (event === 'SIGNED_IN' && session) {
-          await refreshProfile();
-          fetchNotifications();
-          fetchConnections();
+          try {
+            await refreshProfile();
+            fetchNotifications();
+            fetchConnections();
+          } catch (error) {
+            console.error('Error on SIGNED_IN:', error);
+            setLoading(false);
+          }
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
           router.push('/login');
+        } else if (event === 'TOKEN_REFRESHED' && session) {
+          // Token was refreshed, ensure we have the latest profile
+          await refreshProfile();
         }
       }
     );
