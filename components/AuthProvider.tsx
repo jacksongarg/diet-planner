@@ -44,7 +44,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Check initial auth state
     const initAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabase.auth.getSession();
+
+        if (error) {
+          console.error('Error getting session:', error);
+          setUser(null);
+          setLoading(false);
+          setIsInitialized(true);
+          return;
+        }
 
         if (session?.user) {
           await refreshProfile();
@@ -54,10 +62,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
           setUser(null);
           setLoading(false);
         }
+        setIsInitialized(true);
       } catch (error) {
         console.error('Error initializing auth:', error);
+        setUser(null);
         setLoading(false);
-      } finally {
         setIsInitialized(true);
       }
     };
@@ -65,31 +74,36 @@ export function AuthProvider({ children }: AuthProviderProps) {
     initAuth();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event: AuthChangeEvent, session: Session | null) => {
-        console.log('Auth state changed:', event, session?.user?.email);
+    let subscription: { unsubscribe: () => void } | null = null;
+    try {
+      const { data } = supabase.auth.onAuthStateChange(
+        async (event: AuthChangeEvent, session: Session | null) => {
+          console.log('Auth state changed:', event, session?.user?.email);
 
-        if (event === 'SIGNED_IN' && session) {
-          try {
+          if (event === 'SIGNED_IN' && session) {
+            try {
+              await refreshProfile();
+              fetchNotifications();
+              fetchConnections();
+            } catch (error) {
+              console.error('Error on SIGNED_IN:', error);
+              setLoading(false);
+            }
+          } else if (event === 'SIGNED_OUT') {
+            setUser(null);
+            router.push('/login');
+          } else if (event === 'TOKEN_REFRESHED' && session) {
             await refreshProfile();
-            fetchNotifications();
-            fetchConnections();
-          } catch (error) {
-            console.error('Error on SIGNED_IN:', error);
-            setLoading(false);
           }
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
-          router.push('/login');
-        } else if (event === 'TOKEN_REFRESHED' && session) {
-          // Token was refreshed, ensure we have the latest profile
-          await refreshProfile();
         }
-      }
-    );
+      );
+      subscription = data.subscription;
+    } catch (error) {
+      console.error('Error setting up auth listener:', error);
+    }
 
     return () => {
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
     };
   }, []);
 
