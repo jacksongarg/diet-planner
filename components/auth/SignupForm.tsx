@@ -73,6 +73,10 @@ export function SignupForm() {
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         },
       });
 
@@ -80,6 +84,7 @@ export function SignupForm() {
         setError(error.message);
         setIsLoading(false);
       }
+      // Don't set loading to false here - we're redirecting to Google
     } catch (err: any) {
       console.error('Google signup error:', err);
       setError(err?.message || 'An unexpected error occurred');

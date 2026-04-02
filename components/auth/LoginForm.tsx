@@ -69,7 +69,11 @@ export function LoginForm() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?redirect=${redirect}`,
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         },
       });
 
@@ -77,6 +81,7 @@ export function LoginForm() {
         setError(error.message);
         setIsLoading(false);
       }
+      // Don't set loading to false here - we're redirecting to Google
     } catch (err: any) {
       console.error('Google signin error:', err);
       setError(err?.message || 'An unexpected error occurred');
