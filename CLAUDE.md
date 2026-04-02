@@ -261,3 +261,37 @@ npm install @supabase/supabase-js @supabase/ssr
 3. Add environment variables to `.env.local`
 4. Configure Google OAuth (optional)
 5. Deploy and test auth flows
+
+---
+**Session: April 2, 2026**
+Completed auth-aware UI integration across all pages:
+
+**Changes Made:**
+- Updated main page (`app/page.tsx`) with:
+  - Auth state handling (loading, not authenticated, authenticated)
+  - Login/signup prompt when not authenticated
+  - Header with NotificationBell, ModeToggle, and Settings link
+  - Partner selector in couple mode
+  - Dynamic user names based on auth context
+
+- Updated all secondary pages with auth-aware UI and dark theme:
+  - `app/analytics/page.tsx` - User toggle only shows in couple mode
+  - `app/supplements/page.tsx` - Shows current user + partner in couple mode
+  - `app/upload/page.tsx` - Auth check with sign-in prompt
+  - `app/profile/page.tsx` - User info, connected users, mode toggle, sign out button
+
+- Updated navigation:
+  - `components/BottomNav.tsx` - Hides on auth pages and when not authenticated
+
+- Updated all components with dark theme (zinc-* colors):
+  - `components/AnalyticsDashboard.tsx`
+  - `components/SupplementsSection.tsx`
+  - `components/PDFUpload.tsx`
+  - `components/UserMealSection.tsx` - Added optional `displayName` prop
+
+**Status:**
+- All auth pages working (login, signup, forgot-password)
+- Google OAuth configured and working
+- Dark theme applied consistently across the app
+- View mode toggle (Single/Couple) functional
+- Partner connection system implemented
