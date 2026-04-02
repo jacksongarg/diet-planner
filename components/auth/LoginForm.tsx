@@ -10,12 +10,13 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect') || '/';
+  const callbackError = searchParams.get('error');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(callbackError ? decodeURIComponent(callbackError) : null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,25 +26,31 @@ export function LoginForm() {
     try {
       console.log('Attempting login with:', email);
 
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+      // Check if supabase is available
+      if (!supabase || !supabase.auth) {
+        throw new Error('Supabase client not initialized');
+      }
+
+      const result = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      console.log('Sign in result:', { data, error: signInError });
+      console.log('Sign in result:', result);
 
-      if (signInError) {
-        setError(signInError.message);
+      if (result.error) {
+        setError(result.error.message);
         setIsLoading(false);
         return;
       }
 
-      if (!data.session) {
+      if (!result.data?.session) {
         setError('No session returned. Please try again.');
         setIsLoading(false);
         return;
       }
 
+      console.log('Login successful, redirecting...');
       // Successfully signed in - redirect
       router.push(redirect);
       router.refresh();

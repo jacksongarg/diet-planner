@@ -5,11 +5,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 let supabaseInstance: SupabaseClient | null = null;
 
-export function getSupabase(): SupabaseClient {
-  if (typeof window === 'undefined') {
-    throw new Error('getSupabase can only be called on the client side');
-  }
-
+export function getSupabaseClient(): SupabaseClient {
   if (supabaseInstance) {
     return supabaseInstance;
   }
@@ -18,8 +14,7 @@ export function getSupabase(): SupabaseClient {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    console.error('Missing env vars:', { supabaseUrl: !!supabaseUrl, supabaseAnonKey: !!supabaseAnonKey });
-    throw new Error('Supabase URL and Anon Key are required');
+    throw new Error('Missing Supabase environment variables');
   }
 
   supabaseInstance = createBrowserClient(supabaseUrl, supabaseAnonKey);
@@ -30,15 +25,15 @@ export function isSupabaseConfigured(): boolean {
   return !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 }
 
-// Direct export - will be initialized on first use
+// For backwards compatibility - creates client on first access
 export const supabase = {
   get auth() {
-    return getSupabase().auth;
+    return getSupabaseClient().auth;
   },
-  get from() {
-    return getSupabase().from.bind(getSupabase());
+  from(table: string) {
+    return getSupabaseClient().from(table);
   },
-  get channel() {
-    return getSupabase().channel.bind(getSupabase());
+  channel(name: string) {
+    return getSupabaseClient().channel(name);
   },
 };
