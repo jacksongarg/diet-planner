@@ -42,8 +42,8 @@ export function AnalyticsDashboard({ user }: AnalyticsDashboardProps) {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-stone-800">{USER_LABELS[user]}'s Progress</h2>
-        <span className="text-sm text-stone-500">Last 7 days</span>
+        <h2 className="text-lg font-semibold text-white">{USER_LABELS[user]}'s Progress</h2>
+        <span className="text-sm text-zinc-400">Last 7 days</span>
       </div>
 
       {/* Streak Card */}
@@ -63,14 +63,14 @@ export function AnalyticsDashboard({ user }: AnalyticsDashboardProps) {
       {/* Stats Grid */}
       <div className="grid grid-cols-3 gap-3">
         <StatCard
-          icon={<Flame className="w-5 h-5 text-orange-500" />}
+          icon={<Flame className="w-5 h-5 text-orange-400" />}
           label="Avg Calories"
           value={avgCalories.toString()}
           target={profile.target_calories}
           color="orange"
         />
         <StatCard
-          icon={<Target className="w-5 h-5 text-blue-500" />}
+          icon={<Target className="w-5 h-5 text-blue-400" />}
           label="Avg Protein"
           value={`${avgProtein}g`}
           target={profile.target_protein}
@@ -78,7 +78,7 @@ export function AnalyticsDashboard({ user }: AnalyticsDashboardProps) {
           color="blue"
         />
         <StatCard
-          icon={<Calendar className="w-5 h-5 text-emerald-500" />}
+          icon={<Calendar className="w-5 h-5 text-emerald-400" />}
           label="Completion"
           value={`${avgCompletion}%`}
           color="emerald"
@@ -86,10 +86,10 @@ export function AnalyticsDashboard({ user }: AnalyticsDashboardProps) {
       </div>
 
       {/* Weekly Progress Bars */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-stone-100">
-        <h3 className="text-sm font-semibold text-stone-700 mb-4">Weekly Calorie Progress</h3>
+      <div className="bg-zinc-900 rounded-xl p-4 border border-zinc-800">
+        <h3 className="text-sm font-semibold text-zinc-300 mb-4">Weekly Calorie Progress</h3>
         {userStats.length === 0 ? (
-          <p className="text-sm text-stone-500 text-center py-4">
+          <p className="text-sm text-zinc-500 text-center py-4">
             No data recorded yet. Mark meals as complete to track progress.
           </p>
         ) : (
@@ -105,12 +105,12 @@ export function AnalyticsDashboard({ user }: AnalyticsDashboardProps) {
               return (
                 <div key={stat.id}>
                   <div className="flex justify-between text-xs mb-1">
-                    <span className="text-stone-600">{dateLabel}</span>
-                    <span className="text-stone-500">
+                    <span className="text-zinc-400">{dateLabel}</span>
+                    <span className="text-zinc-500">
                       {stat.calories_consumed} / {stat.calories_target} cal
                     </span>
                   </div>
-                  <div className="h-2 bg-stone-100 rounded-full">
+                  <div className="h-2 bg-zinc-800 rounded-full">
                     <div
                       className={`h-full rounded-full transition-all ${
                         percent > 100 ? 'bg-red-500' : percent >= 80 ? 'bg-emerald-500' : 'bg-amber-500'
@@ -126,8 +126,8 @@ export function AnalyticsDashboard({ user }: AnalyticsDashboardProps) {
       </div>
 
       {/* Macro Breakdown */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-stone-100">
-        <h3 className="text-sm font-semibold text-stone-700 mb-4">Macro Distribution (7-day avg)</h3>
+      <div className="bg-zinc-900 rounded-xl p-4 border border-zinc-800">
+        <h3 className="text-sm font-semibold text-zinc-300 mb-4">Macro Distribution (7-day avg)</h3>
         <div className="flex items-center justify-center gap-4">
           <MacroCircle
             label="Protein"
@@ -172,18 +172,18 @@ interface StatCardProps {
 
 function StatCard({ icon, label, value, target, suffix, color }: StatCardProps) {
   const bgColors = {
-    orange: 'bg-orange-50',
-    blue: 'bg-blue-50',
-    emerald: 'bg-emerald-50',
+    orange: 'bg-orange-500/10',
+    blue: 'bg-blue-500/10',
+    emerald: 'bg-emerald-500/10',
   };
 
   return (
-    <div className={`${bgColors[color]} rounded-xl p-3 text-center`}>
+    <div className={`${bgColors[color]} rounded-xl p-3 text-center border border-zinc-800`}>
       <div className="flex justify-center mb-2">{icon}</div>
-      <p className="text-lg font-bold text-stone-800">{value}</p>
-      <p className="text-xs text-stone-500">{label}</p>
+      <p className="text-lg font-bold text-white">{value}</p>
+      <p className="text-xs text-zinc-400">{label}</p>
       {target && (
-        <p className="text-xs text-stone-400">
+        <p className="text-xs text-zinc-500">
           Target: {target}
           {suffix}
         </p>
@@ -206,7 +206,7 @@ function MacroCircle({ label, value, target, color }: MacroCircleProps) {
     <div className="text-center">
       <div className="relative w-16 h-16 mx-auto mb-2">
         <svg className="w-full h-full transform -rotate-90">
-          <circle cx="32" cy="32" r="28" stroke="#e5e7eb" strokeWidth="6" fill="none" />
+          <circle cx="32" cy="32" r="28" stroke="#3f3f46" strokeWidth="6" fill="none" />
           <circle
             cx="32"
             cy="32"
@@ -219,11 +219,11 @@ function MacroCircle({ label, value, target, color }: MacroCircleProps) {
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-sm font-bold text-stone-700">{percent}%</span>
+          <span className="text-sm font-bold text-white">{percent}%</span>
         </div>
       </div>
-      <p className="text-xs font-medium text-stone-700">{label}</p>
-      <p className="text-xs text-stone-500">
+      <p className="text-xs font-medium text-zinc-300">{label}</p>
+      <p className="text-xs text-zinc-500">
         {value}g / {target}g
       </p>
     </div>

@@ -29,19 +29,19 @@ export function SupplementsSection({ user, date }: SupplementsSectionProps) {
   const adherencePercent = totalCount > 0 ? Math.round((takenCount / totalCount) * 100) : 0;
 
   return (
-    <div className="bg-white rounded-xl p-4 shadow-sm border border-stone-100">
+    <div className="bg-zinc-900 rounded-xl p-4 border border-zinc-800">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Pill className="w-5 h-5 text-purple-600" />
-          <h3 className="font-semibold text-stone-800">{USER_LABELS[user]}'s Supplements</h3>
+          <Pill className="w-5 h-5 text-purple-400" />
+          <h3 className="font-semibold text-white">{USER_LABELS[user]}'s Supplements</h3>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-stone-500">
+          <span className="text-sm text-zinc-400">
             {takenCount}/{totalCount} ({adherencePercent}%)
           </span>
           <button
             onClick={() => setShowAddModal(true)}
-            className="p-1.5 text-purple-600 hover:bg-purple-50 rounded-lg"
+            className="p-1.5 text-purple-400 hover:bg-zinc-800 rounded-lg"
           >
             <Plus className="w-4 h-4" />
           </button>
@@ -49,7 +49,7 @@ export function SupplementsSection({ user, date }: SupplementsSectionProps) {
       </div>
 
       {userSupplements.length === 0 ? (
-        <p className="text-sm text-stone-500 text-center py-4">
+        <p className="text-sm text-zinc-500 text-center py-4">
           No supplements added yet. Tap + to add one.
         </p>
       ) : (
@@ -58,7 +58,7 @@ export function SupplementsSection({ user, date }: SupplementsSectionProps) {
             <div
               key={supplement.id}
               className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
-                isTaken(supplement.id) ? 'bg-purple-50' : 'bg-stone-50'
+                isTaken(supplement.id) ? 'bg-purple-500/10' : 'bg-zinc-800'
               }`}
             >
               <button
@@ -66,7 +66,7 @@ export function SupplementsSection({ user, date }: SupplementsSectionProps) {
                 className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
                   isTaken(supplement.id)
                     ? 'bg-purple-500 border-purple-500 text-white'
-                    : 'border-stone-300 hover:border-purple-400'
+                    : 'border-zinc-600 hover:border-purple-400'
                 }`}
               >
                 {isTaken(supplement.id) && <Check className="w-4 h-4" />}
@@ -75,12 +75,12 @@ export function SupplementsSection({ user, date }: SupplementsSectionProps) {
               <div className="flex-1 min-w-0">
                 <p
                   className={`font-medium text-sm ${
-                    isTaken(supplement.id) ? 'text-stone-500 line-through' : 'text-stone-800'
+                    isTaken(supplement.id) ? 'text-zinc-500 line-through' : 'text-white'
                   }`}
                 >
                   {supplement.name}
                 </p>
-                <div className="flex items-center gap-2 text-xs text-stone-500">
+                <div className="flex items-center gap-2 text-xs text-zinc-500">
                   <span>{supplement.dosage}</span>
                   <span>•</span>
                   <span className="flex items-center gap-1">
@@ -94,7 +94,7 @@ export function SupplementsSection({ user, date }: SupplementsSectionProps) {
 
               <button
                 onClick={() => removeSupplement(user, supplement.id)}
-                className="p-1 text-stone-400 hover:text-red-500"
+                className="p-1 text-zinc-500 hover:text-red-400"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -142,41 +142,41 @@ function AddSupplementModal({ user, onClose, onAdd }: AddSupplementModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70" onClick={onClose} />
 
-      <div className="relative bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-zinc-900 w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-6 shadow-xl max-h-[90vh] overflow-y-auto border border-zinc-800">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-stone-800">Add Supplement</h2>
-          <button onClick={onClose} className="p-2 text-stone-400 hover:text-stone-600 rounded-lg">
+          <h2 className="text-lg font-semibold text-white">Add Supplement</h2>
+          <button onClick={onClose} className="p-2 text-zinc-400 hover:text-zinc-200 rounded-lg">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">Name</label>
+            <label className="block text-sm font-medium text-zinc-300 mb-1">Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Vitamin D3"
-              className="w-full px-3 py-2 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">Dosage</label>
+            <label className="block text-sm font-medium text-zinc-300 mb-1">Dosage</label>
             <input
               type="text"
               value={dosage}
               onChange={(e) => setDosage(e.target.value)}
               placeholder="e.g., 2000 IU"
-              className="w-full px-3 py-2 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-2">Timing</label>
+            <label className="block text-sm font-medium text-zinc-300 mb-2">Timing</label>
             <div className="flex flex-wrap gap-2">
               {SUPPLEMENT_TIMINGS.map((t) => (
                 <button
@@ -185,7 +185,7 @@ function AddSupplementModal({ user, onClose, onAdd }: AddSupplementModalProps) {
                   className={`px-3 py-1.5 rounded-full text-sm transition-all ${
                     timing.includes(t.value)
                       ? 'bg-purple-500 text-white'
-                      : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                      : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
                   }`}
                 >
                   {t.icon} {t.label}
@@ -195,13 +195,13 @@ function AddSupplementModal({ user, onClose, onAdd }: AddSupplementModalProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">Notes (optional)</label>
+            <label className="block text-sm font-medium text-zinc-300 mb-1">Notes (optional)</label>
             <input
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any special instructions..."
-              className="w-full px-3 py-2 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
         </div>
@@ -209,7 +209,7 @@ function AddSupplementModal({ user, onClose, onAdd }: AddSupplementModalProps) {
         <div className="flex gap-3 mt-6">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-3 text-stone-600 bg-stone-100 rounded-xl font-medium hover:bg-stone-200"
+            className="flex-1 px-4 py-3 text-zinc-300 bg-zinc-800 rounded-xl font-medium hover:bg-zinc-700"
           >
             Cancel
           </button>

@@ -9,12 +9,16 @@ interface UserMealSectionProps {
   user: User;
   day: DayOfWeek;
   dayPlan: DayPlan;
-  sharedMeals: MealType[];
+  sharedMeals: MealType[] | Set<MealType>;
   onEditMeal: (user: User, mealType: MealType) => void;
+  displayName?: string;
 }
 
-export function UserMealSection({ user, day, dayPlan, sharedMeals, onEditMeal }: UserMealSectionProps) {
+export function UserMealSection({ user, day, dayPlan, sharedMeals, onEditMeal, displayName }: UserMealSectionProps) {
   const { getEffectiveMeal } = useDietStore();
+
+  const name = displayName || USER_LABELS[user];
+  const sharedMealsArray = sharedMeals instanceof Set ? Array.from(sharedMeals) : sharedMeals;
 
   return (
     <div className="mb-6">
@@ -24,9 +28,9 @@ export function UserMealSection({ user, day, dayPlan, sharedMeals, onEditMeal }:
             user === 'jackson' ? 'bg-blue-500' : 'bg-pink-500'
           }`}
         >
-          {USER_LABELS[user][0]}
+          {name[0].toUpperCase()}
         </div>
-        <h2 className="text-lg font-semibold text-stone-800">{USER_LABELS[user]}</h2>
+        <h2 className="text-lg font-semibold text-white">{name}</h2>
       </div>
 
       {/* Macro Summary */}
@@ -44,7 +48,7 @@ export function UserMealSection({ user, day, dayPlan, sharedMeals, onEditMeal }:
               meal={meal}
               user={user}
               day={day}
-              isShared={sharedMeals.includes(key)}
+              isShared={sharedMealsArray.includes(key)}
               isOverride={isOverride}
               sourceDay={sourceDay}
               onEdit={() => onEditMeal(user, key)}

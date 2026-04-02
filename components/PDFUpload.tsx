@@ -74,11 +74,11 @@ export function PDFUpload() {
   return (
     <div className="space-y-6">
       {/* Mode Toggle */}
-      <div className="flex gap-2 p-1 bg-stone-100 rounded-lg">
+      <div className="flex gap-2 p-1 bg-zinc-800 rounded-lg">
         <button
           onClick={() => setMode('file')}
           className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-            mode === 'file' ? 'bg-white text-stone-800 shadow-sm' : 'text-stone-500'
+            mode === 'file' ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-400'
           }`}
         >
           Upload File
@@ -86,7 +86,7 @@ export function PDFUpload() {
         <button
           onClick={() => setMode('text')}
           className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-            mode === 'text' ? 'bg-white text-stone-800 shadow-sm' : 'text-stone-500'
+            mode === 'text' ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-400'
           }`}
         >
           Paste Text
@@ -97,7 +97,7 @@ export function PDFUpload() {
       {mode === 'file' && (
         <div
           onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-stone-300 rounded-xl p-8 text-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/50 transition-all"
+          className="border-2 border-dashed border-zinc-700 rounded-xl p-8 text-center cursor-pointer hover:border-red-500 hover:bg-red-500/5 transition-all"
         >
           <input
             ref={fileInputRef}
@@ -108,26 +108,26 @@ export function PDFUpload() {
           />
           {file ? (
             <div className="flex items-center justify-center gap-3">
-              <FileText className="w-8 h-8 text-emerald-600" />
+              <FileText className="w-8 h-8 text-red-400" />
               <div className="text-left">
-                <p className="font-medium text-stone-800">{file.name}</p>
-                <p className="text-sm text-stone-500">{(file.size / 1024).toFixed(1)} KB</p>
+                <p className="font-medium text-white">{file.name}</p>
+                <p className="text-sm text-zinc-500">{(file.size / 1024).toFixed(1)} KB</p>
               </div>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setFile(null);
                 }}
-                className="p-1 text-stone-400 hover:text-red-500"
+                className="p-1 text-zinc-500 hover:text-red-400"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
           ) : (
             <>
-              <Upload className="w-10 h-10 text-stone-400 mx-auto mb-3" />
-              <p className="text-stone-600 font-medium">Upload your diet plan</p>
-              <p className="text-sm text-stone-400 mt-1">PDF or TXT files supported</p>
+              <Upload className="w-10 h-10 text-zinc-500 mx-auto mb-3" />
+              <p className="text-zinc-300 font-medium">Upload your diet plan</p>
+              <p className="text-sm text-zinc-500 mt-1">PDF or TXT files supported</p>
             </>
           )}
         </div>
@@ -145,14 +145,14 @@ Example:
 Monday - Breakfast: Oatmeal with berries (350 cal)
 Monday - Lunch: Grilled chicken salad (450 cal)
 ..."
-            className="w-full h-48 px-4 py-3 border border-stone-200 rounded-xl text-stone-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+            className="w-full h-48 px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white text-sm placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
           />
         </div>
       )}
 
       {/* Error Message */}
       {error && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 text-red-700 rounded-lg">
+        <div className="flex items-center gap-2 p-3 bg-red-500/10 text-red-400 rounded-lg border border-red-500/20">
           <AlertCircle className="w-5 h-5" />
           <p className="text-sm">{error}</p>
         </div>
@@ -163,7 +163,7 @@ Monday - Lunch: Grilled chicken salad (450 cal)
         <button
           onClick={handleExtract}
           disabled={isProcessing || (!file && !textContent.trim())}
-          className="w-full px-4 py-3 text-white bg-emerald-600 rounded-xl font-medium hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full px-4 py-3 text-white bg-red-500 rounded-xl font-medium hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isProcessing ? (
             <>
@@ -181,41 +181,41 @@ Monday - Lunch: Grilled chicken salad (450 cal)
 
       {/* Preview Extracted Plan */}
       {extractedPlan && (
-        <div className="bg-emerald-50 rounded-xl p-4">
+        <div className="bg-emerald-500/10 rounded-xl p-4 border border-emerald-500/20">
           <div className="flex items-center gap-2 mb-3">
-            <Check className="w-5 h-5 text-emerald-600" />
-            <h3 className="font-semibold text-emerald-800">Plan Extracted Successfully!</h3>
+            <Check className="w-5 h-5 text-emerald-400" />
+            <h3 className="font-semibold text-emerald-400">Plan Extracted Successfully!</h3>
           </div>
 
-          <div className="bg-white rounded-lg p-4 mb-4 max-h-64 overflow-y-auto">
-            <p className="text-sm font-medium text-stone-700 mb-2">
+          <div className="bg-zinc-900 rounded-lg p-4 mb-4 max-h-64 overflow-y-auto border border-zinc-800">
+            <p className="text-sm font-medium text-white mb-2">
               {extractedPlan.title || 'Diet Plan'}
             </p>
             {extractedPlan.description && (
-              <p className="text-sm text-stone-600 mb-3">{extractedPlan.description}</p>
+              <p className="text-sm text-zinc-400 mb-3">{extractedPlan.description}</p>
             )}
             <div className="grid grid-cols-4 gap-2 text-xs text-center">
-              <div className="bg-orange-50 rounded p-2">
-                <p className="font-medium text-orange-700">{extractedPlan.daily_calories || '-'}</p>
-                <p className="text-orange-600">Calories</p>
+              <div className="bg-orange-500/10 rounded p-2 border border-orange-500/20">
+                <p className="font-medium text-orange-400">{extractedPlan.daily_calories || '-'}</p>
+                <p className="text-orange-300">Calories</p>
               </div>
-              <div className="bg-blue-50 rounded p-2">
-                <p className="font-medium text-blue-700">{extractedPlan.protein_grams || '-'}g</p>
-                <p className="text-blue-600">Protein</p>
+              <div className="bg-blue-500/10 rounded p-2 border border-blue-500/20">
+                <p className="font-medium text-blue-400">{extractedPlan.protein_grams || '-'}g</p>
+                <p className="text-blue-300">Protein</p>
               </div>
-              <div className="bg-amber-50 rounded p-2">
-                <p className="font-medium text-amber-700">{extractedPlan.carbs_grams || '-'}g</p>
-                <p className="text-amber-600">Carbs</p>
+              <div className="bg-amber-500/10 rounded p-2 border border-amber-500/20">
+                <p className="font-medium text-amber-400">{extractedPlan.carbs_grams || '-'}g</p>
+                <p className="text-amber-300">Carbs</p>
               </div>
-              <div className="bg-purple-50 rounded p-2">
-                <p className="font-medium text-purple-700">{extractedPlan.fat_grams || '-'}g</p>
-                <p className="text-purple-600">Fat</p>
+              <div className="bg-purple-500/10 rounded p-2 border border-purple-500/20">
+                <p className="font-medium text-purple-400">{extractedPlan.fat_grams || '-'}g</p>
+                <p className="text-purple-300">Fat</p>
               </div>
             </div>
 
             {extractedPlan.days && (
               <div className="mt-4 text-sm">
-                <p className="font-medium text-stone-700 mb-2">
+                <p className="font-medium text-zinc-300 mb-2">
                   {extractedPlan.days.length} days extracted
                 </p>
               </div>
@@ -229,7 +229,7 @@ Monday - Lunch: Grilled chicken salad (450 cal)
                 setFile(null);
                 setTextContent('');
               }}
-              className="flex-1 px-4 py-2 text-stone-600 bg-white rounded-lg font-medium hover:bg-stone-50"
+              className="flex-1 px-4 py-2 text-zinc-300 bg-zinc-800 rounded-lg font-medium hover:bg-zinc-700"
             >
               Cancel
             </button>
