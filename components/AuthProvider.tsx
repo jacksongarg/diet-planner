@@ -29,9 +29,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return;
     }
 
-    // Skip auth check on callback page - let the callback handle it
-    if (pathname === '/auth/callback') {
+    // Skip auth check on auth pages - they handle their own state
+    const isAuthPage = pathname === '/auth/callback' ||
+                       pathname === '/login' ||
+                       pathname === '/signup' ||
+                       pathname === '/forgot-password';
+
+    if (isAuthPage) {
       setIsInitialized(true);
+      setLoading(false);
       return;
     }
 
