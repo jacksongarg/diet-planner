@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { Loader2 } from 'lucide-react';
@@ -9,9 +9,14 @@ export default function AuthCallbackPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
+  const isProcessing = useRef(false);
 
   useEffect(() => {
     const handleCallback = async () => {
+      // Prevent multiple simultaneous calls
+      if (isProcessing.current) return;
+      isProcessing.current = true;
+
       try {
         // Check for error in URL
         const errorParam = searchParams.get('error');
@@ -27,9 +32,22 @@ export default function AuthCallbackPage() {
 
         if (code) {
           console.log('Exchanging code for session...');
+
+          // Small delay to let any other requests complete
+          await new Promise(resolve => setTimeout(resolve, 100));
+
           const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
 
           if (exchangeError) {
+            // If it's a lock error or code already used, check if we have a session
+            if (exchangeError.message.includes('lock') || exchangeError.message.includes('code')) {
+              const { data: { session } } = await supabase.auth.getSession();
+              if (session) {
+                console.log('Session exists despite error, redirecting...');
+                router.replace('/');
+                return;
+              }
+            }
             console.error('Exchange error:', exchangeError);
             setError(exchangeError.message);
             return;

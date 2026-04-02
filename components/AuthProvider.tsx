@@ -29,6 +29,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return;
     }
 
+    // Skip auth check on callback page - let the callback handle it
+    if (pathname === '/auth/callback') {
+      setIsInitialized(true);
+      return;
+    }
+
     // Check initial auth state
     const initAuth = async () => {
       try {
